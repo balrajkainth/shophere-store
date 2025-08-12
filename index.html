@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Shophere — Home</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="logo"><a href="index.html">Shophere</a></div>
+    <div class="search-bar">
+      <input id="searchInput" placeholder="Search for products, brands and more" aria-label="Search products" />
+      <button id="searchBtn">Search</button>
+    </div>
+    <div class="top-actions">
+      <a href="cart.html" class="cart-link">Cart (<span id="cart-count">0</span>)</a>
+    </div>
+  </header>
+
+  <nav class="categories" aria-label="Product categories">
+    <a href="#" data-cat="All">All</a>
+    <a href="#" data-cat="Electronics">Electronics</a>
+    <a href="#" data-cat="Bags">Bags</a>
+    <a href="#" data-cat="Footwear">Footwear</a>
+    <a href="#" data-cat="Accessories">Accessories</a>
+  </nav>
+
+  <main class="container">
+    <aside class="left-panel">
+      <h3>Filters</h3>
+      <!-- Sort Filter -->
+      <div>
+        <label for="sortSelect">Sort:</label>
+        <select id="sortSelect">
+          <option value="featured">Featured</option>
+          <option value="price-asc">Price: Low to High</option>
+          <option value="price-desc">Price: High to Low</option>
+          <option value="rating">Top Rated</option>
+        </select>
+      </div>
+
+      <!-- Price Range Filter -->
+      <div style="margin-top:15px;">
+        <label for="minPrice">Min Price:</label>
+        <input type="number" id="minPrice" placeholder="0" min="0">
+        <label for="maxPrice">Max Price:</label>
+        <input type="number" id="maxPrice" placeholder="1000" min="0">
+        <button id="applyPriceFilter" class="btn">Apply</button>
+      </div>
+
+      <!-- Rating Filter -->
+      <div style="margin-top:15px;">
+        <label>Rating:</label>
+        <select id="ratingFilter">
+          <option value="">All Ratings</option>
+          <option value="4">⭐ 4 & up</option>
+          <option value="3">⭐ 3 & up</option>
+          <option value="2">⭐ 2 & up</option>
+        </select>
+      </div>
+    </aside>
+
+    <section class="products" id="productGrid" aria-live="polite"></section>
+  </main>
+
+  <footer class="footer">© Shophere </footer>
+
+  <script src="data/products.js"></script>
+  <script src="scripts.js"></script>
+  <script>
+    // Dark mode toggle
+    document.getElementById('darkModeToggle').addEventListener('click', () => {
+      document.body.classList.toggle('dark-mode');
+    });
+
+    // Enter key for search
+    document.getElementById('searchInput').addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        document.getElementById('searchBtn').click();
+      }
+    });
+  </script>
+</body>
+</html>

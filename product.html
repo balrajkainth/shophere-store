@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Shophere — Product</title>
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    /* Breadcrumb style */
+    .breadcrumb {
+      max-width: 1150px;
+      margin: 10px auto;
+      font-size: 14px;
+      color: var(--muted);
+      padding: 0 12px;
+    }
+    .breadcrumb a {
+      text-decoration: none;
+      color: var(--amazon-dark);
+    }
+    .breadcrumb a:hover {
+      text-decoration: underline;
+    }
+    /* Keep desktop layout on mobile */
+    @media(max-width: 900px) {
+      .product-page {
+        grid-template-columns: 1fr 360px;
+        overflow-x: auto;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="logo"><a href="index.html">Shophere</a></div>
+    <div class="search-bar">
+      <input id="searchInputP" placeholder="Search for products, brands and more" />
+      <button id="searchBtnP">Search</button>
+    </div>
+    <div class="top-actions">
+      <a href="cart.html" class="cart-link">Cart (<span id="cart-count-p">0</span>)</a>
+    </div>
+  </header>
+
+  <!-- Breadcrumb -->
+  <nav class="breadcrumb">
+    <a href="index.html">Home</a> › 
+    <span id="breadcrumbCategory">Category</span> › 
+    <span id="breadcrumbTitle">Product Name</span>
+  </nav>
+
+  <main class="container product-page" id="productPage">
+    <!-- Product details injected by JS -->
+  </main>
+
+  <!-- Related Products -->
+  <section class="container" style="flex-direction:column; margin-top:20px;">
+    <h3>Related Products</h3>
+    <div class="products" id="relatedProducts"></div>
+  </section>
+
+  <!-- Reviews Section -->
+  <section class="container" style="flex-direction:column; margin-top:20px;">
+    <h3>Customer Reviews</h3>
+    <div id="reviewsSection">
+      <p>No reviews yet. Be the first to review this product!</p>
+    </div>
+  </section>
+
+  <footer class="footer">© Shophere — Demo store</footer>
+
+  <script src="data/products.js"></script>
+  <script src="scripts.js"></script>
+  <script>
+    function renderProductPageEnhanced(id) {
+      var p = products.find(x => x.id === id);
+      if (!p) return;
+
+      document.getElementById('breadcrumbCategory').innerText = p.category;
+      document.getElementById('breadcrumbTitle').innerText = p.title;
+
+      var container = document.getElementById('productPage');
+      container.innerHTML = `
+        <div class="product-detail">
+          <img src="${p.image}" alt="${p.title}">
+          <h2 class="title">${p.title}</h2>
+          <div class="meta">${p.category} • ⭐ ${p.rating}</div>
+          <div class="price" style="margin-top:8px;font-size:20px">₹${p.price}</div>
+          <p style="margin-top:10px">${p.desc}</p>
+          <label for="quantity">Quantity:</label>
+          <input type="number" id="quantity" value="1" min="1" style="width:60px;">
+          <div style="margin-top:10px;">
+            <button class="btn" onclick="addToCartWithQty('${p.id}')">Add to Cart</button>
+            <button class="ghost" onclick="addToWishlist('${p.id}')">❤️ Add to Wishlist</button>
+          </div>
+        </div>
+      `;
+
+      // Related products
+      var related = products.filter(prod => prod.category === p.category && prod.id !== p.id).slice(0, 4);
+      var relatedContainer = document.getElementById('relatedProducts');
+      relatedContainer.innerHTML = '';
+      related.forEach(prod => {
+        relatedContainer.innerHTML += `
+          <div class="card">
+            <img src="${prod.image}" alt="${prod.title}">
+            <div class="title">${prod.title}</div>
+            <div class="meta">${prod.category} • ⭐ ${prod.rating}</div>
+            <div class="price">₹${prod.price}</div>
+            <div class="row">
+              <button class="btn" onclick="addToCart('${prod.id}')">Add to Cart</button>
+              <a class="ghost" href="product.html?id=${prod.id}">View</a>
+            </div>
+          </div>
+        `;
+      });
+    }
+
+    // Quantity-aware add to cart
+    function addToCartWithQty(id) {
+      var qty = parseInt(document.getElementById('quantity').value) || 1;
+      var cart = JSON.parse(localStorage.getItem('myazon_cart') || '[]');
+      var found = cart.find(x => x.id === id);
+      if (found) found.qty += qty;
+      else cart.push({ id: id, qty: qty });
+      localStorage.setItem('myazon_cart', JSON.stringify(cart));
+      if (typeof showToast === 'function') {
+        showToast('✅ Added to cart');
+      }
+      updateCartCount();
+    }
+
+    // Wishlist add
+    function addToWishlist(id) {
+      var wishlist = JSON.parse(localStorage.getItem('wishlist') || '[]');
+      if (!wishlist.includes(id)) {
+        wishlist.push(id);
+        localStorage.setItem('wishlist', JSON.stringify(wishlist));
+        if (typeof showToast === 'function') {
+          showToast('❤️ Added to wishlist');
+        }
+      } else {
+        if (typeof showToast === 'function') {
+          showToast('⚠️ Already in wishlist');
+        }
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+      var params = new URLSearchParams(location.search);
+      var id = params.get('id');
+      if (id) renderProductPageEnhanced(id);
+    });
+  </script>
+</body>
+</html>
+  
